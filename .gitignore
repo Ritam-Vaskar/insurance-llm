@@ -28,7 +28,7 @@ build/
 .ipynb_checkpoints
 
 # Project specific
-embeddings/chroma/  # ChromaDB files
+embeddings/chroma/
 chunks/  # Processed document chunks
 *.pdf  # PDF documents in data directory
 
