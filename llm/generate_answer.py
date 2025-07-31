@@ -3,8 +3,9 @@ import json
 from datetime import datetime
 from groq import Groq
 from config import GROQ_MODEL, GROQ_API_KEY, EMBED_MODEL_NAME
+import os
 
-
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY")
 def ask_llm(query, paragraphs, doc_metadata=None):
     if not GROQ_API_KEY:
         raise ValueError("GROQ_API_KEY not set in environment variables")
