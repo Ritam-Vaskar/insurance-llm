@@ -1,6 +1,6 @@
 import json
 
-from llm.gemini_client import generate_text
+from llm.groq_client import generate_text
 from config import (
     NODE_TEXT_MAX_CHARS,
     TREE_MAX_DEPTH,

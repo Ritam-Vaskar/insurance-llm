@@ -1,3 +1,4 @@
 pageindex
-google-generativeai
 python-dotenv
+groq
+streamlit

@@ -1,4 +1,4 @@
-from llm.gemini_client import generate_text
+from llm.groq_client import generate_text
 
 
 def ask_llm(query, paragraphs):

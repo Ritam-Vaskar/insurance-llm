@@ -5,7 +5,7 @@ DOCS_DIR = "data/policies"
 INDEX_DIR = "index_data"
 
 PAGEINDEX_API_KEY_ENV = "PAGEINDEX_API_KEY"
-GEMINI_API_KEY_ENV = "GEMINI_API_KEY"
+GROQ_API_KEY_ENV = "GROQ_API_KEY"
 
 PAGEINDEX_DOCS_CACHE = os.path.join(INDEX_DIR, "pageindex_docs.json")
 PAGEINDEX_TREES_CACHE = os.path.join(INDEX_DIR, "pageindex_trees.json")
@@ -13,7 +13,7 @@ PAGEINDEX_TREES_CACHE = os.path.join(INDEX_DIR, "pageindex_trees.json")
 PAGEINDEX_POLL_SECONDS = 5
 PAGEINDEX_MAX_POLLS = 60
 
-GEMINI_MODEL_NAME = "gemini-1.5-flash-latest"
+GROQ_MODEL_NAME = "llama-3.1-8b-instant"
 
 TREE_MAX_DEPTH = 6
 TREE_MAX_NODES_PER_STEP = 6
