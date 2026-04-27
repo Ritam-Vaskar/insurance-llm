@@ -4,6 +4,33 @@ from scripts.pageindex_index import build_pageindex_trees
 from scripts.pageindex_query import query_tree
 
 
+def _page_range(node):
+    start = node.get("start_index") or node.get("page_index")
+    end = node.get("end_index") or node.get("page_index")
+    if start is None and "page" in node:
+        start = node.get("page")
+        end = node.get("page")
+    return start, end
+
+
+def _render_tree(nodes, selected_ids, depth=0, max_depth=8):
+    if depth >= max_depth:
+        return
+    for node in nodes:
+        node_id = str(node.get("node_id") or "")
+        title = node.get("title") or "(untitled)"
+        start, end = _page_range(node)
+        page_info = "pages ?"
+        if start is not None and end is not None:
+            page_info = f"pages {start}-{end}"
+        selected_tag = " **[selected]**" if node_id in selected_ids else ""
+        indent = "  " * depth
+        st.markdown(f"{indent}- {title} ({node_id}, {page_info}){selected_tag}")
+        children = node.get("nodes") or []
+        if children:
+            _render_tree(children, selected_ids, depth + 1, max_depth=max_depth)
+
+
 st.set_page_config(page_title="Insurance QA (PageIndex)", layout="wide")
 
 st.title("Insurance Policy QA (PageIndex, Vectorless)")
@@ -53,20 +80,45 @@ if ask:
             with st.spinner("Retrieving nodes and generating answer..."):
                 result = query_tree(question, tree)
 
-            st.subheader("Answer")
-            st.write(result["answer"])
+            all_selected_ids = []
+            for node_ids, _reason in result["traversal"]:
+                all_selected_ids.extend(node_ids)
+            selected_id_set = set(all_selected_ids)
 
-            st.subheader("Retrieval Log")
-            traversal_lines = []
-            for step, (node_ids, reason) in enumerate(result["traversal"], 1):
-                reason_part = f" | reason: {reason}" if reason else ""
-                traversal_lines.append(f"Step {step}: {', '.join(node_ids)}{reason_part}")
-            st.code("\n".join(traversal_lines) or "No traversal steps recorded.")
+            answer_tab, log_tab, nodes_tab, tree_tab = st.tabs(
+                ["Answer", "Retrieval Log", "Selected Nodes", "Tree Structure"]
+            )
 
-            st.subheader("Selected Nodes")
-            for node in result["selected_nodes"]:
-                page_info = "pages unknown"
-                if node["start_page"] is not None and node["end_page"] is not None:
-                    page_info = f"pages {node['start_page']}-{node['end_page']}"
-                with st.expander(f"{node['title']} ({node['node_id']}, {page_info})"):
-                    st.write(node["context"])
+            with answer_tab:
+                st.subheader("Answer")
+                st.write(result["answer"])
+
+            with log_tab:
+                st.subheader("Retrieval Log")
+                traversal_lines = []
+                for step, (node_ids, reason) in enumerate(result["traversal"], 1):
+                    reason_part = f" | reason: {reason}" if reason else ""
+                    traversal_lines.append(
+                        f"Step {step}: {', '.join(node_ids)}{reason_part}"
+                    )
+                st.code("\n".join(traversal_lines) or "No traversal steps recorded.")
+
+            with nodes_tab:
+                st.subheader("Selected Nodes (All Steps)")
+                if not result["selected_nodes"]:
+                    st.info("No selected nodes returned.")
+                for node in result["selected_nodes"]:
+                    page_info = "pages unknown"
+                    if node["start_page"] is not None and node["end_page"] is not None:
+                        page_info = f"pages {node['start_page']}-{node['end_page']}"
+                    with st.expander(
+                        f"{node['title']} ({node['node_id']}, {page_info})"
+                    ):
+                        st.write(node["context"])
+
+            with tree_tab:
+                st.subheader("Tree Structure (Selected Highlighted)")
+                if not tree:
+                    st.info("No tree available.")
+                else:
+                    _render_tree(tree, selected_id_set)
