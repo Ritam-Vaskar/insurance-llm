@@ -1,4 +1,21 @@
 # config.py
-LLM_MODEL_NAME = "google/flan-t5-base"  # Using base model for better response quality
+import os
+
 DOCS_DIR = "data/policies"
 INDEX_DIR = "index_data"
+
+PAGEINDEX_API_KEY_ENV = "PAGEINDEX_API_KEY"
+GEMINI_API_KEY_ENV = "GEMINI_API_KEY"
+
+PAGEINDEX_DOCS_CACHE = os.path.join(INDEX_DIR, "pageindex_docs.json")
+PAGEINDEX_TREES_CACHE = os.path.join(INDEX_DIR, "pageindex_trees.json")
+
+PAGEINDEX_POLL_SECONDS = 5
+PAGEINDEX_MAX_POLLS = 60
+
+GEMINI_MODEL_NAME = "gemini-1.5-flash-latest"
+
+TREE_MAX_DEPTH = 6
+TREE_MAX_NODES_PER_STEP = 6
+TREE_SELECT_TOP_K = 3
+NODE_TEXT_MAX_CHARS = 1200

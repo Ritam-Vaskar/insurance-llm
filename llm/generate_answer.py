@@ -1,20 +1,8 @@
-from transformers import pipeline
-from config import LLM_MODEL_NAME
+from llm.gemini_client import generate_text
+
 
 def ask_llm(query, paragraphs):
-    # Initialize the model with text2text generation pipeline
-    generator = pipeline(
-        "text2text-generation",
-        model=LLM_MODEL_NAME,
-        framework="pt",
-        max_length=512,
-        do_sample=True,
-        top_p=0.95,
-        top_k=50
-    )
-    
-    # Construct a clear prompt
-    context = "\n".join([f"Paragraph {i+1}: {para}" for i, para in enumerate(paragraphs)])
+    context = "\n".join([f"Paragraph {i + 1}: {para}" for i, para in enumerate(paragraphs)])
     prompt = f"""Based on the following insurance policy information, answer this question: {query}
 
 Context:
@@ -28,12 +16,7 @@ Analyze the above context and provide a detailed response including:
 
 Response:"""
 
-    # Generate response
-    response = generator(prompt, max_length=512)[0]['generated_text']
-    
-    # If response is too short, try to generate a more detailed one
+    response = generate_text(prompt, temperature=0.2)
     if len(response.split()) < 20:
-        prompt += "\nPlease provide a detailed and complete answer."
-        response = generator(prompt, max_length=512)[0]['generated_text']
-    
+        response = generate_text(prompt + "\nPlease provide a detailed and complete answer.")
     return response

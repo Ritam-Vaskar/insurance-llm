@@ -1,6 +1,6 @@
-# Insurance Policy Question Answering System
+# Insurance Policy QA with PageIndex (Vectorless)
 
-This project implements a question-answering system for insurance policies using Natural Language Processing and Large Language Models.
+This project builds a PageIndex tree for each PDF policy and uses Gemini to traverse the tree and answer questions with reasons. It is fully vectorless (no embeddings or vector DB).
 
 ## Project Structure
 
@@ -8,65 +8,53 @@ This project implements a question-answering system for insurance policies using
 insurance-llm/
 │
 ├── data/
-│   └── policies/                  # Your input PDF/Word/email files
+│   └── policies/                  # Input PDF policies
 │       └── policy1.pdf
 │
-├── chunks/
-│   └── chunked_docs.json         # Extracted paragraph-wise chunks
-│
-├── embeddings/
-│   └── chroma/                   # ChromaDB vector store
-│
-├── models/
-│   └── huggingface_model.py      # Load HuggingFace embedding model
+├── index_data/
+│   ├── pageindex_docs.json         # Maps filename -> doc_id
+│   └── pageindex_trees.json        # Cached PageIndex trees
 │
 ├── scripts/
-│   ├── parse_documents.py        # Extracts paragraphs from PDFs
-│   ├── embed_and_store.py        # Generates embeddings & stores in ChromaDB
-│   ├── query_pipeline.py         # User query interface + LLM inference
+│   ├── pageindex_index.py          # Submit PDFs and fetch PageIndex trees
+│   └── pageindex_query.py          # Tree traversal + Gemini reasoning
 │
 ├── llm/
-│   └── generate_answer.py        # Uses HuggingFace LLM to answer queries
+│   └── gemini_client.py            # Gemini API wrapper
 │
+├── app.py                          # CLI entry point
 ├── requirements.txt
-├── config.py                     # Settings like model names, db path, etc.
+├── config.py
 └── README.md
 ```
 
 ## Setup
 
-1. Install dependencies:
+1) Install dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Place your insurance policy PDFs in the `data/policies/` directory.
-
-3. Process the documents:
+2) Set environment variables (API keys):
 ```bash
-python scripts/parse_documents.py
+set PAGEINDEX_API_KEY=your_pageindex_key
+set GEMINI_API_KEY=your_gemini_key
 ```
 
-4. Generate embeddings and store in ChromaDB:
+3) Put your PDF policies in `data/policies/`.
+
+4) Run the app:
 ```bash
-python scripts/embed_and_store.py
+python app.py
 ```
 
-5. Run the query interface:
-```bash
-python scripts/query_pipeline.py
-```
+## How it Works
 
-## Usage
+1) PageIndex builds a hierarchical tree for each PDF.
+2) Gemini selects relevant nodes by traversing the tree.
+3) The system answers with reasons and cites node titles/pages.
 
-Run the query pipeline and enter your questions about the insurance policies. The system will:
-1. Search for relevant passages using semantic similarity
-2. Generate a natural language answer using a Large Language Model
-3. Provide source passages for reference
+## Notes
 
-## Dependencies
-
-- PyPDF2: PDF parsing
-- ChromaDB: Vector storage and similarity search
-- Transformers: HuggingFace models for embeddings and LLM
-- Torch: Deep learning framework
+- PageIndex trees are cached in `index_data/` so re-runs are fast.
+- If the document is still processing, the app will poll until the tree is ready.
