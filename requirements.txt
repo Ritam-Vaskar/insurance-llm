@@ -1,4 +1,4 @@
-PyMuPDF==1.22.3
-transformers==4.41.1
+PyMuPDF
+transformers
 torch>=2.1.0
 accelerate

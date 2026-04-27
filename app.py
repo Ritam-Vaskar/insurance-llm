@@ -16,7 +16,7 @@ def main():
     # Step 3: Query loop
     print("\n[3] Ready for questions!\n")
     while True:
-        query = input("\n🧠 Ask a question (or type 'exit'): ")
+        query = input("\nAsk a question (or type 'exit'): ")
         if query.lower() == "exit":
             break
         query_pipeline.query_system(query)

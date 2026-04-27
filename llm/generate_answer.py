@@ -6,6 +6,7 @@ def ask_llm(query, paragraphs):
     generator = pipeline(
         "text2text-generation",
         model=LLM_MODEL_NAME,
+        framework="pt",
         max_length=512,
         do_sample=True,
         top_p=0.95,

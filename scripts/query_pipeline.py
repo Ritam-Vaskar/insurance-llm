@@ -11,7 +11,7 @@ def query_system(user_query):
     docs_path = os.path.join(INDEX_DIR, "docs.pkl")
     
     if not os.path.exists(index_path) or not os.path.exists(docs_path):
-        print(f"\n❌ Error: No index found. Please run the document parsing and indexing steps first.")
+        print(f"\n[Error] No index found. Please run the document parsing and indexing steps first.")
         return
 
     with open(index_path, "rb") as f:
@@ -30,14 +30,14 @@ def query_system(user_query):
     top_paragraphs = [docs[i]["text"] for i in top_indices if scores[i] > 0]
     
     if not top_paragraphs:
-        print("\n🔍 No relevant context found.")
+        print("\n[No Context] No relevant context found.")
         return
 
-    print("\n🔍 Context Retrieved:")
+    print("\n[Context Retrieved]")
     for i, idx in enumerate(top_indices[:len(top_paragraphs)], 1):
         doc = docs[idx]
         print(f"{i}. [Page {doc['page_num']} of {doc['doc_id']}] {doc['text'][:150]}...")
 
-    print("\n🤖 Answer:")
+    print("\n[Answer]")
     response = ask_llm(user_query, top_paragraphs)
     print(response)
