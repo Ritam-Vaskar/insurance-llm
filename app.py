@@ -1,17 +1,17 @@
 # app.py
 
-from scripts import parse_documents, embed_and_store, query_pipeline
+from scripts import parse_documents, build_index, query_pipeline
 
 def main():
-    print("\n=== Insurance Document Query Assistant ===\n")
+    print("\n=== Insurance Document Query Assistant (Vectorless) ===\n")
     
     # Step 1: Parse docs (only if not already parsed)
-    print("[1] Parsing documents...")
+    print("[1] Parsing documents into pages...")
     parse_documents.parse_all()
 
-    # Step 2: Embed and store (only if not already embedded)
-    print("[2] Embedding and storing chunks into ChromaDB...")
-    embed_and_store.embed_chunks()
+    # Step 2: Build page index
+    print("[2] Building BM25 index...")
+    build_index.build_bm25_index()
 
     # Step 3: Query loop
     print("\n[3] Ready for questions!\n")
