@@ -2,3 +2,4 @@ pageindex
 python-dotenv
 groq
 streamlit
+PyMuPDF

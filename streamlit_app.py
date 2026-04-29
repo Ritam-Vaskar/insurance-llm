@@ -1,5 +1,7 @@
 import streamlit as st
-
+import os
+from scripts.parse_documents import parse_documents
+from scripts.build_index import build_index
 from scripts.pageindex_index import build_pageindex_trees
 from scripts.pageindex_query import query_tree
 
@@ -41,10 +43,23 @@ if "docs_cache" not in st.session_state:
 if "trees_cache" not in st.session_state:
     st.session_state.trees_cache = {}
 
+# Add file uploader for user-uploaded PDFs
+uploaded_files = st.file_uploader("Upload PDF files", type="pdf", accept_multiple_files=True)
+
+if uploaded_files:
+    st.info("Processing uploaded files...")
+    for uploaded_file in uploaded_files:
+        file_path = os.path.join("data/policies", uploaded_file.name)
+        with open(file_path, "wb") as f:
+            f.write(uploaded_file.read())
+    st.success("Files uploaded successfully. Click 'Build/Refresh PageIndex Trees' to index them.")
+
 with st.sidebar:
     st.header("Indexing")
     if st.button("Build/Refresh PageIndex Trees", use_container_width=True):
         with st.spinner("Building PageIndex trees..."):
+            parse_documents("data/policies")  # Parse all documents in the folder
+            build_index("data/policies")  # Build index for parsed documents
             docs_cache, trees_cache = build_pageindex_trees()
             st.session_state.docs_cache = docs_cache
             st.session_state.trees_cache = trees_cache

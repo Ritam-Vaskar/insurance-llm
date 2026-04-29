@@ -4,11 +4,11 @@ import os, json
 import fitz  # PyMuPDF
 from config import DOCS_DIR
 
-def parse_all():
+def parse_documents(input_dir):
     output = []
-    for fname in os.listdir(DOCS_DIR):
+    for fname in os.listdir(input_dir):
         if fname.endswith(".pdf"):
-            doc_path = os.path.join(DOCS_DIR, fname)
+            doc_path = os.path.join(input_dir, fname)
             try:
                 doc = fitz.open(doc_path)
                 for page_num in range(len(doc)):
